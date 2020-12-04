@@ -1,0 +1,372 @@
+{
+	"info": {
+		"_postman_id": "825f4926-06f0-4ff7-8080-81f23ec2691a",
+		"name": "fibonacci",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Calculate term",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "7f989c57-a4cc-49ca-ab73-973381072928",
+						"exec": [
+							"pm.test(\"Status code is 202\", function () {",
+							"  pm.expect(pm.response.code).to.equal(202);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('location')).to.eql('localhost:8080/api/v1/fibonacci/' + pm.environment.get('term'));",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0d0f59b2-82bf-484b-8b68-3199616da96f",
+						"exec": [
+							"pm.environment.set('term', 500);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"term\": \"{{term}}\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fibonacci/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fibonacci",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get previously calculated term",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d11cd9f2-d971-4c3b-8a2a-66d9933836b6",
+						"exec": [
+							"pm.test(\"Status code is 404 or 200\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([404,200]);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Structure is correct\", () => {",
+							"  const responseJson = pm.response.json();",
+							"  if (pm.response.code == 200) {",
+							"      pm.expect(responseJson.data.result).to.be.a('string');",
+							"      pm.expect(responseJson.error).to.eql(null);",
+							"      pm.expect(responseJson.data.result).to.be.eql('139423224561697880139724382870407283950070256587697307264108962948325571622863290691557658876222521294125');",
+							"  } else if (pm.response.code == 404) {",
+							"      pm.expect(responseJson.error.code).to.eql(404);",
+							"      pm.expect(responseJson.error.message).to.be.a('string');",
+							"      pm.expect(responseJson.data).to.eql(null);",
+							"      pm.expect(responseJson.error.message).to.include(\"not available yet\");",
+							"  }",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "3efd9e84-c277-4e31-bfcb-fc5962f693c6",
+						"exec": [
+							"//setTimeout(function(){}, 2000);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"connection": true,
+					"accept-encoding": true,
+					"accept": true,
+					"user-agent": true,
+					"host": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fibonacci/{{term}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fibonacci",
+						"{{term}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Calculate invalid term",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "cdca75f1-2b40-4b86-8923-e6e9a8a32527",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([400]);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Structure is correct\", () => {",
+							"  const responseJson = pm.response.json();",
+							"   pm.expect(responseJson.error.code).to.eql(400);",
+							"   pm.expect(responseJson.error.message).to.be.a('string');",
+							"   pm.expect(responseJson.data).to.eql(null);",
+							"   pm.expect(responseJson.error.message).to.eql(\"Only integer values allowed!\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"term\": \"abc\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fibonacci/",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fibonacci",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get invalid term",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "841fbe15-c0ba-4772-9573-8250c18b5afd",
+						"exec": [
+							"pm.test(\"Status code is 400\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([400]);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Structure is correct\", () => {",
+							"  const responseJson = pm.response.json();",
+							"   pm.expect(responseJson.error.code).to.eql(400);",
+							"   pm.expect(responseJson.error.message).to.be.a('string');",
+							"   pm.expect(responseJson.data).to.eql(null);",
+							"   pm.expect(responseJson.error.message).to.eql(\"Only integer values allowed!\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"host": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fibonacci/abc",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fibonacci",
+						"abc"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get term not yet calculated",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "fa4d9a79-8879-4faf-bfbb-02fd15bb477d",
+						"exec": [
+							"pm.test(\"Status code is 404\", function () {",
+							"  pm.expect(pm.response.code).to.be.oneOf([404]);",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is present\", () => {",
+							"  pm.response.to.have.header(\"Content-Type\");",
+							"});",
+							"",
+							"pm.test(\"Content-Type header is application/json\", () => {",
+							"  pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/json');",
+							"});",
+							"",
+							"pm.test(\"Structure is correct\", () => {",
+							"  const responseJson = pm.response.json();",
+							"   pm.expect(responseJson.error.code).to.eql(404);",
+							"   pm.expect(responseJson.error.message).to.be.a('string');",
+							"   pm.expect(responseJson.data).to.eql(null);",
+							"   pm.expect(responseJson.error.message).to.include(\"is not available yet\");",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {
+					"accept": true,
+					"accept-encoding": true,
+					"connection": true,
+					"host": true,
+					"user-agent": true
+				}
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/api/v1/fibonacci/2002",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"api",
+						"v1",
+						"fibonacci",
+						"2002"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
